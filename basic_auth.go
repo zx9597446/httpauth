@@ -25,6 +25,7 @@ type AuthOptions struct {
 	Password            string
 	AuthFunc            func(string, string, *http.Request) bool
 	UnauthorizedHandler http.Handler
+	AuthHeader          string
 }
 
 // Satisfies the http.Handler interface for basicAuth.
@@ -61,6 +62,9 @@ func (b *basicAuth) authenticate(r *http.Request) bool {
 
 	// Confirm the request is sending Basic Authentication credentials.
 	auth := r.Header.Get("Authorization")
+	if b.opts.AuthHeader != "" {
+		auth = r.Header.Get(b.opts.AuthHeader)
+	}
 	if !strings.HasPrefix(auth, basicScheme) {
 		return false
 	}
